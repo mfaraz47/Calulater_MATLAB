@@ -1,0 +1,396 @@
+function paintapp
+
+scz=get(0,'ScreenSize');
+
+ 
+figure('Position',[round(scz(1,3)/4) round(scz(1,4)/8) 700 500],'MenuBar','None','NumberTitle','off','Name','Paint Application','Resize','off');
+
+ 
+ 
+inputs=['RED   ';'GREEN ';'BLUE  ';'YELLOW';'BLACK ';'WHITE ';'ORANGE';'PURPLE';'BROWN ';'PINK  ';'GRAY  ';'LGREEN';'Save  ';'undo  '];
+
+global top targetcolor replacecolor x y A color undocolor originalcolor point filename;
+
+top=1;
+
+targetcolor=[255 255 255];
+
+xaxis=500;
+
+yaxis=400;
+
+for k=1:size(inputs,1)
+
+uicontrol('Style','pushbutton','position',[xaxis yaxis 80 30],'String',inputs(k,:),'Callback',@paintme);
+
+xaxis=xaxis+90;
+
+if(mod(k,2)==0)
+
+    yaxis=yaxis-50;
+
+    xaxis=500;
+
+end
+
+ 
+ 
+end
+
+ 
+ax=axes('Position',[0 0 .7 1],'xtick',[],'ytick',[]);
+
+directory=dir('*.png');
+
+files={directory.name}';
+
+ 
+uicontrol('Style','popupmenu','position',[500 450 160 30],'Value',1,'String',files,'Callback',@displayfile);
+
+function displayfile(obj,~)
+
+        ptr=get(obj,'value');
+
+        filename=char(files(ptr));
+
+        A=imread(filename);
+
+        image(A);
+
+end
+
+function paintme(object,~)
+
+   color=get(object,'String');
+
+   if(~isempty(A))
+
+   switch(color(1,:))
+
+       case 'RED   '
+
+           while(strcmp(color,'RED   ')==1)
+
+           replacecolor=[254 1 1];
+
+            getpoints;
+
+           end
+
+       case 'GREEN '
+
+           while(strcmp(color,'GREEN ')==1)
+
+           replacecolor=[1 60 21];
+
+          getpoints;
+
+           end
+
+ 
+ 
+       case 'BLUE  '
+
+           while(strcmp(color,'BLUE  ')==1)
+
+               replacecolor=[20 120 120];
+
+           %replacecolor=[1 1 254];
+
+            getpoints;
+
+           end
+
+       case 'YELLOW'
+
+           while(strcmp(color,'YELLOW')==1)
+
+           replacecolor=[240 240 1];
+
+           getpoints;
+
+           end
+
+       case 'BLACK '
+
+           while(strcmp(color,'BLACK ')==1)
+
+           replacecolor=[1 1 1];
+
+            getpoints;
+
+           end
+
+       case 'WHITE '
+
+           while(strcmp(color,'WHITE ')==1)
+
+           replacecolor=[254 254 254];
+
+            getpoints;
+
+           end
+
+       case 'ORANGE'
+
+          while(strcmp(color,'ORANGE')==1)
+
+          replacecolor=[250 90 1];
+
+         getpoints;
+
+          end
+
+       case 'PURPLE'
+
+           while(strcmp(color,'PURPLE')==1)
+
+           replacecolor=[90 20 60];
+
+            getpoints;
+
+           end
+
+       case 'BROWN '
+
+           replacecolor=[90 20 10];
+
+           while(strcmp(color,'BROWN ')==1)
+
+            getpoints;
+
+           end
+
+       case 'PINK  '
+
+           while(strcmp(color,'PINK  ')==1)
+
+           replacecolor=[220 90 90];
+
+            getpoints;
+
+           end
+
+          
+
+            case 'LGREEN'
+
+           while(strcmp(color,'LGREEN')==1)
+
+            replacecolor=[20 240 10];
+
+            getpoints;
+
+           end
+
+       case 'GRAY  '
+
+      
+
+           while(strcmp(color,'GRAY  ')==1)
+
+           replacecolor=[20 20 20];
+
+            getpoints;
+
+           end
+
+          
+
+        case 'undo  '
+
+                floodfill(point(1),point(2),undocolor,originalcolor);
+
+       case 'Save  '
+
+           fname=strcat('my',filename);
+
+           msg=strcat('File name:',fname);
+
+           msgbox(msg,'FILE SAVED');
+
+          
+
+   end
+
+   end
+
+   
+
+end
+
+function getpoints
+
+      
+
+     try
+
+         waitforbuttonpress;
+
+         f=get(ax,'CurrentPoint');
+
+         x=round(f(1,2));
+
+         y=round(f(1,1));
+
+        
+
+         % check whether x and y is less than the size of the image
+
+         targetcolor(1)=A(x,y,1);
+
+         targetcolor(2)=A(x,y,2);
+
+         targetcolor(3)=A(x,y,3);
+
+        
+
+         point(1)=x;
+
+         point(2)=y;
+
+         undocolor=replacecolor;
+
+         originalcolor=targetcolor;
+
+         floodfill(x,y,targetcolor,replacecolor);
+
+        % end
+
+    
+
+     catch
+
+         color='null';
+
+     end
+
+        
+
+       
+
+end
+
+function floodfill(x,y,targetcolor,replacecolor)
+
+    top=1;
+
+    queue=zeros(1);
+
+   
+
+    if((A(x,y,1)==targetcolor(1))&&(A(x,y,2)==targetcolor(2))&&(A(x,y,3)==targetcolor(3)))
+
+        queue(top,1)=x;
+
+        queue(top,2)=y;
+
+        top=top+1;
+
+        i=1;
+
+     while(i~=top)
+
+          l= queue(i,1);
+
+          m=queue(i,2);
+
+        
+
+             
+
+         if((A(l,m,1)==targetcolor(1))&&(A(l,m,2)==targetcolor(2))&&(A(l,m,3)==targetcolor(3)))
+
+            
+
+             w=m;
+
+             e=m;
+
+             wnode=1;
+
+             enode=1;
+
+             while((A(l,w,1)==targetcolor(1))&&(A(l,w,2)==targetcolor(2))&&(A(l,w,3)==targetcolor(3)))
+
+                 wnode=wnode+1;
+
+                 w=w-1;
+
+             end
+
+             while((A(l,e,1)==targetcolor(1))&&(A(l,e,2)==targetcolor(2))&&(A(l,e,3)==targetcolor(3)))
+
+                 enode=enode+1;
+
+                 e=e+1;
+
+             end
+
+             w=m+1;
+
+             e=m-1;
+
+             for j=1:wnode-1
+
+                 A(l,w-j,1)=replacecolor(1);
+
+                 A(l,w-j,2)=replacecolor(2);
+
+                A(l,w-j,3)=replacecolor(3);
+
+             end
+
+             
+
+             for j=1:enode-1
+
+                A(l,e+j,1)=replacecolor(1);
+
+                A(l,e+j,2)=replacecolor(2);
+
+                A(l,e+j,3)=replacecolor(3);
+
+             end
+
+             snode=m-wnode+2;
+
+             for j=snode:(snode+enode+wnode-4)
+
+                if((A(l+1,j,1)==targetcolor(1))&&(A(l+1,j,2)==targetcolor(2))&&(A(l+1,j,3)==targetcolor(3)))
+
+                   queue(top,1)=l+1;
+
+                   queue(top,2)=j;
+
+                   top=top+1;
+
+               end
+
+                if((A(l-1,j,1)==targetcolor(1))&&(A(l-1,j,2)==targetcolor(2))&&(A(l-1,j,3)==targetcolor(3)))
+
+               queue(top,1)=l-1;
+
+               queue(top,2)=j;
+
+               top=top+1;
+
+                end
+
+                end
+
+        
+
+         end
+
+        i=i+1;
+
+    end
+
+    end
+
+    image(A);
+
+end
+
+end
