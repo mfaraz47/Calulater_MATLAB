@@ -1,0 +1,135 @@
+function calculator
+figure('Position',[200 200 220 200],'Name','Calculator','NumberTitle','off','MenuBar','None','Resize','off');
+txt=uicontrol('Style','Text','Position',[10 165 200 30],'String','0');
+global stack value top op tops opstack num1 num2 flag;
+flag=0;
+x=10;
+y=130;
+top=1;
+tops=1;
+name=['7','8','9','/','4','5','6','*','1','2','3','-','0','+','C','='];%k
+
+
+for k=1:size(name,2)
+   
+   uicontrol('Style','Pushbutton','Position',[x y 50 30],'String' ,name(k),'Callback',@arithmetic) ;
+   x=x+50;
+   if(mod(k,4)==0)
+   
+       x=10;y=y-35;
+      
+   end
+end
+
+function arithmetic(object,~)
+        num=str2double(get(object,'String'));
+        if((num>=0)&&(num<=9))
+            value=num;
+            evaluate();
+        else
+            op=get(object,'String');
+            if(op=='C')
+                top=1;
+                tops=1;
+                set(txt,'String','0');
+            else
+            operator();
+            end
+        end
+end
+
+function evaluate()
+          stack(top)=value;
+          if((stack(1)==0)&&(top==2))
+                stack(1)=stack(top);
+                top=top-1;
+         end
+       str=num2str(stack(1));
+       for i=2:top
+                str=strcat(str,num2str(stack(i)));
+       end
+            top=top+1;
+            set(txt,'String',' ');
+            set(txt,'String',str);
+            flag=0;
+end
+    
+function operator()
+        
+     if((top~=1)||(flag==1))
+      
+        opstack(tops)=op;
+        tops=tops+1;
+       
+        if((tops==2)&&(flag~=1))
+           
+            str=num2str(stack(1));
+            for i=2:top-1
+                str=strcat(str,num2str(stack(i)));
+            end
+            num1=str2double(str);
+            flag=1;
+            top=1;
+        elseif(tops>=3)
+                     
+            if(flag==0)
+            str=num2str(stack(1));
+            for i=2:top-1
+                str=strcat(str,num2str(stack(i)));
+            end
+            num2=str2double(str);
+           
+          
+            top=1;
+           
+            if(opstack(tops-1)=='=')
+                
+                calculate();
+             set(txt,'String','           ');
+            set(txt,'String',num2str(num1));
+           
+            flag=1;
+            tops=1;
+           
+           
+           
+            
+            else  
+               
+            calculate();
+            set(txt,'String','           ');
+            set(txt,'String',num2str(num1));
+           
+            flag=1;
+            tmp=opstack(tops-1);
+            opstack(1)=tmp;
+            tops=tops-1;
+            end
+            else
+                tmp=opstack(tops-1);
+                opstack(1)=tmp;
+                tops=tops-1;
+               
+            end
+        end
+       
+      end
+end
+
+function calculate()
+        switch (opstack(1))
+                case '+'                
+                       num1=num1+num2;
+                case '-'
+                       num1=num1-num2;
+                case '/'
+                       num1=num1/num2;
+                case '*'
+                        num1=num1*num2;
+                       
+          
+        end
+    end
+       
+end
+    
