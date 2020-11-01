@@ -1,0 +1,36 @@
+h = uibuttongroup('Units', 'pixels'); 
+% Create toggle buttons in the button group. 
+ uicontrol('Style','push','String','stop',... 
+    'pos',[260 30 80 25],'parent',h,'HandleVisibility','off'); 
+ uicontrol('Style','push','String','start',... 
+    'pos',[260 65 80 26],'parent',h,'HandleVisibility','off'); 
+h = uibuttongroup('Units', 'pixels'); 
+% Create two radio buttons in the button group. 
+ uicontrol('Style','Radio','String','sine',... 
+    'pos',[5000 100 800 800],'parent',h,'HandleVisibility','off'); 
+ uicontrol('Style','Radio','String','square',... 
+    'pos',[60 40 200 800],'parent',h,'HandleVisibility','off');
+  % Create one slider. 
+uicontrol('Style','slider','String','frequency',... 
+    'pos',[100 200 50 100],'parent',h,'HandleVisibility','off'); %figure('Position',[200 200 220 200],'Name','Calculator','NumberTitle','off','MenuBar','None','Resize','off');
+txt=uicontrol('Style','Text','Position',[10 165 200 30],'String','0');
+%global stack value top op tops opstack num1 num2 flag;
+flag=0;
+x=10;
+y=130;
+top=1;
+tops=1;
+name=['0','1','2','3','4','5','6','7','8','9',];%k
+ 
+ 
+for k=1:size(name,2)
+   
+   uicontrol('Style','Pushbutton','Position',[x y 50 30],'String',name(k),'Callback',@arithmetic) ;
+   x=x+50;
+   if(mod(k,4)==0)
+   
+       x=10;y=y-35;
+      
+   end
+end
+ 
